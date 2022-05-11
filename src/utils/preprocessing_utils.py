@@ -13,7 +13,7 @@ def load_image(img_path: str) -> np.ndarray:
 
 def preprocess_image(img: np.ndarray)-> np.ndarray:
     '''
-    return image as an array of 0's and 1's
+    returns image as an array of 0's and 1's
     '''
     #apply adaptive threshold to image
     blur = cv2.GaussianBlur(img,(5,5),0)
