@@ -155,19 +155,20 @@ def get_areas(boxes_corners: List[List[List[int]]]) -> List[int]:
 
 
 def filter_by_area(
-    areas: List[int], boxes_corners: List[List[List[int]]]
-) -> Tuple[List[int], List[List[List[int]]]]:
+    areas: List[int], boxes_corners: List[List[List[int]]], filter_value: int = 0
+) -> Tuple[List[int], List[List[List[int]]], List[int]]:
     """
-    function filters areas and boxes corners by mean value
+    function filters areas and boxes corners by filter value
 
     Parameters
     -----
     areas: List[int]
     boxes_corners: List[List[List[int]]]
+    filter_value: int=0
 
     Returns
     -----
-    Tuple[List[int], List[List[List[int]]]]
+    Tuple[List[int], List[List[List[int]]], List[int]]
     """
     assert len(areas) == len(boxes_corners)
 
@@ -178,16 +179,54 @@ def filter_by_area(
         boxes_corners, dtype=np.object_
     )
 
-    mask = np.where(areas_np > 0)
-    non_zero_areas = areas_np[mask]
-    non_zero_corners = boxes_corners_np[mask]
+    mask = np.where(areas_np > filter_value)
+    filtered_areas = areas_np[mask]
+    filtered_corners = boxes_corners_np[mask]
 
-    avg_area = np.mean(areas_np)  # find average area
-    std_area = np.std(areas_np)  # find standard deviation of area
+    return filtered_areas.tolist(), filtered_corners.tolist(), mask[0].tolist()
 
+
+def get_boxes_sides_length(
+    boxes_corners: List[List[List[int]]],
+) -> Tuple[List[int], List[int]]:
+    """
+    function takes boxes corners and returns widths and heights of boxes
+
+    Parameters
+    -----
+    boxes_corners: List[List[List[int]]]
+
+    Returns
+    -----
+    Tuple[List[int], List[int]]
+    """
+    widths: List[int] = []
+    heights: List[int] = []
+    for box_corners in boxes_corners:
+        widths.append(abs(box_corners[0][0] - box_corners[1][0]))
+        heights.append(abs(box_corners[0][1] - box_corners[3][1]))
+    return widths, heights
+
+
+def filter_by_sides(
+    corners: List[List[List[int]]], widths: List[int], heights: List[int]
+) -> Tuple[List[List[List[int]]], List[int]]:
+    """
+    function filters corners of boxes by sides characteristics
+
+    Parameters
+    -----
+    corners: List[List[List[int]]]
+    widths: List[int], heights: List[int]
+    heights: List[int]
+
+    Returns
+    -----
+    Tuple[List[List[List[int]]], List[int]]
+    """
     mask = np.where(
-        (non_zero_areas > (np.mean(non_zero_areas) - np.mean(non_zero_areas) / 2))
+        (np.array(widths) > int(np.mean(widths)))
+        & (np.array(heights) > int(np.mean(heights)))
     )
-    mean_areas = non_zero_areas[mask]
-    mean_corners = non_zero_corners[mask]
-    return mean_areas.tolist(), mean_corners.tolist()
+    filtered_corners = np.array(corners)[mask]
+    return filtered_corners.tolist(), mask[0].tolist()
