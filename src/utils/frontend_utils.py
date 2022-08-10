@@ -37,3 +37,7 @@ def input_for_frontend(
 
 def output_from_frontend() -> None:
     pass
+
+
+def generate_output_text() -> str:
+    pass
