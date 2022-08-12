@@ -4,6 +4,7 @@ from typing import Any, List, Tuple
 import cv2
 import numpy as np
 import numpy.typing
+from skimage import io
 
 
 def load_image(path_to_image: str) -> np.typing.NDArray[np.uint8]:
@@ -21,6 +22,7 @@ def load_image(path_to_image: str) -> np.typing.NDArray[np.uint8]:
     assert os.path.exists(path_to_image)
 
     img = cv2.imread(path_to_image, cv2.IMREAD_GRAYSCALE)
+    # img = io.imread(path_to_image, as_gray=True)
     return np.array(img, dtype=np.uint8)
 
 
@@ -230,3 +232,14 @@ def filter_by_sides(
     )
     filtered_corners = np.array(corners)[mask]
     return filtered_corners.tolist(), mask[0].tolist()
+
+
+def filter_boxes_by_models_predictions(corners, predictions, confidence_threshold=0.5):
+    predictions_confidence_array = np.array([p[1] for p in predictions], np.float16)
+    pred_array = np.array(predictions, dtype=np.object_)
+    corners_array = np.array(corners, dtype=np.object_)
+    
+    mask = np.where(predictions_confidence_array > confidence_threshold)
+    filtered_predictions = pred_array[mask]
+    filtered_corners = corners_array[mask]
+    return filtered_corners, filtered_predictions, mask
