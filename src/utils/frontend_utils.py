@@ -39,5 +39,14 @@ def output_from_frontend() -> None:
     pass
 
 
-def generate_output_text() -> str:
-    pass
+def get_model_response(predictions, filtered_corners):
+    model_response = [
+        {
+            "id": i,
+            "letter": predictions[i][0],
+            "confidence": float(predictions[i][1]),
+            "corners": filtered_corners[i],
+        }
+        for i in range(len(filtered_corners))
+    ] 
+    return model_response
