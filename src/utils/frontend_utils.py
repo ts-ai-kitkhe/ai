@@ -2,11 +2,16 @@ from typing import List, Tuple
 
 
 def input_for_frontend(
-    corners: List[List[int]], predictions: List[Tuple[str, float]], json_path: str
+    corners: List[List[int]], predictions: List[Tuple[str, float, Tuple[List[str], List[float]]]], json_path: str
 ) -> None:
     """
     function generates json on the given path for frontend usage, each corner having its id as string.
-    example: [{"id": 0, "letter": "ა", "confidence": 0.99, "corners": [[0, 1],[0, 3],[2, 0],[1, 0]]}]
+    example: [{"id": 0, "letter": "ა", 
+               "confidence": 0.99, 
+               "corners": [[0, 1],[0, 3],[2, 0],[1, 0]], 
+               "top_letters": ["ა", "ბ", "გ"],
+               "top_confidences": [0.3, 0.2, 0.1]]
+               }]
 
     Parameters
     -----
@@ -27,6 +32,8 @@ def input_for_frontend(
             "letter": predictions[i][0],
             "confidence": float(predictions[i][1]),
             "corners": corners[i],
+            "top_letters": predictions[i][2][0],
+            "top_confidences": [float(p) for p in predictions[i][2][1]],
         }
         for i in range(len(corners))
     ]
