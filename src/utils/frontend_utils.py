@@ -46,6 +46,8 @@ def get_model_response(predictions, filtered_corners):
             "letter": predictions[i][0],
             "confidence": float(predictions[i][1]),
             "corners": filtered_corners[i],
+            "top_letters": predictions[i][2][0],
+            "top_confidences": [float(p) for p in predictions[i][2][1]],
         }
         for i in range(len(filtered_corners))
     ] 
