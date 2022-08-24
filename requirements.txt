@@ -14,4 +14,12 @@ isort
 mypy
 flake8
 pytest
+numpy
 pandas
+tensorflow
+sklearn
+transformers
+tokenizers
+scipy
+scikit-learn
+opencv-contrib-python
