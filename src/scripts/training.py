@@ -4,6 +4,10 @@ from skimage import io
 import numpy as np
 import numpy.typing
 from typing import List, Tuple
+import cv2
+
+
+DEFAULT_MODEL_INPUT_SHAPE = (28, 28)
 
 
 def zero_padding(
@@ -59,7 +63,6 @@ def zero_padding(
             : min(desired_shape[1], binary_image.shape[1]),
         ] = binary_image[: desired_shape[0], : desired_shape[1]]
     return pad
-
 
 
 def remove_extra_space_around_characters(
@@ -132,6 +135,31 @@ def load_image(path_to_image: str) -> np.typing.NDArray[np.uint8]:
 #     img = cv2.imread(path_to_image, cv2.IMREAD_GRAYSCALE)
     img = io.imread(path_to_image, as_gray=True)
     return np.array(img, dtype=np.uint8)
+
+
+def preprocess_image(
+    grayscale_image: np.typing.NDArray[np.uint8],
+) -> np.typing.NDArray[np.uint8]:
+    """
+    function takes grayscale image as array returns image as binary array
+
+    Parameters
+    -----
+    grayscale_image: np.typing.NDArray[np.uint8]
+
+    Returns
+    -----
+    np.typing.NDArray[np.uint8]
+    """
+
+    blur = cv2.GaussianBlur(grayscale_image, (5, 5), 0)
+
+    th3 = cv2.adaptiveThreshold(
+        grayscale_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
+    )
+    th3 = cv2.bitwise_not(th3)
+
+    return np.array(th3, dtype=np.uint8)
 
 
 # Filter Fonts by Name
